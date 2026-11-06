@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /ws/
+Disallow: /api/
+Disallow: /room/
+
+Sitemap: https://openbooth.app/sitemap.xml

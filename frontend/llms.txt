@@ -1,0 +1,11 @@
+# OpenBooth
+> A synchronized 2-player private virtual photobooth designed for distant lovers, friends, and duos.
+
+## Overview
+OpenBooth provides ultra-low-latency WebRTC dual-camera feeds, simultaneous 4-shot synchronized burst captures, and retro-futuristic keepsake strip generation. All media capture is computed client-side within browser memory for privacy and zero data leakage.
+
+## Architecture
+- Dual peer-to-peer WebRTC video channels with STUN fallback
+- Salted SHA-256 room password protection
+- In-memory ephemeral signaling
+- No persistent image storage; photostrips are exported directly to local PNG on device

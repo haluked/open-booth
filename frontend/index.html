@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-[#030712] text-[#f1f5f9]">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/">
+  <title>OPEN // BOOTH — Synchronized WebRTC Virtual Photobooth</title>
+  
+  <meta name="description" content="OpenBooth — Private 2-player synchronized virtual photobooth. Low-latency dual camera feeds, simultaneous 4-shot countdown bursts, and instant retro souvenir strips.">
+  <meta name="keywords" content="virtual photobooth, webrtc photobooth, synchronized cameras, retro photobooth, couples photobooth, keepsake photostrip">
+  <meta name="author" content="OpenBooth Project">
+  <link rel="canonical" href="https://openbooth.app/">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="OPEN // BOOTH — Synchronized WebRTC Virtual Photobooth">
+  <meta property="og:description" content="Private synchronized photobooth for two. Real-time dual camera streams, 4-shot synchronized burst capture, and classic keepsake strip generation.">
+  <meta property="og:image" content="/assets/better_header.png">
+  <meta property="og:url" content="https://openbooth.app/">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="OPEN // BOOTH — Synchronized WebRTC Virtual Photobooth">
+  <meta name="twitter:description" content="Private synchronized photobooth for two. Real-time dual camera streams and keepsake strip generation.">
+  <meta name="twitter:image" content="/assets/better_header.png">
+
+  <!-- Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "OpenBooth",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "All",
+    "description": "Synchronized 2-player private virtual photobooth with client-side 4-shot keepsake strip generation."
+  }
+  </script>
+  
+  <style>
+    @font-face {
+      font-family: 'Fragile Bombers';
+      src: url('fonts/fragile-bombers/Fragile Bombers.otf') format('opentype'),
+           url('fonts/fragile-bombers/FragileBombers.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Granix';
+      src: url('fonts/granix/Granix-Demo.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Sunny Brunch';
+      src: url('fonts/sunny-brunch/sunny-brunch.regular.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'BlueScreen';
+      src: url('fonts/bluescreen/BlueScreen.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Alucrads';
+      src: url('fonts/alucrads/Alucrads.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Hooey Demo';
+      src: url('fonts/hooey-demo/HooeyDEMO-Regular.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    /* Typography Scale strictly following DESIGN.md */
+    .font-bombers { font-family: 'Fragile Bombers', 'Impact', sans-serif; }
+    .font-hooey { font-family: 'Fragile Bombers', 'Hooey Demo', 'Impact', sans-serif; }
+    .font-alucrads { font-family: 'Fragile Bombers', 'Alucrads', 'Impact', sans-serif; }
+    .font-granix { font-family: 'Granix', 'Trebuchet MS', sans-serif; }
+    .font-sunny { font-family: 'Sunny Brunch', monospace; }
+    .font-hud { font-family: 'Sunny Brunch', 'BlueScreen', 'ui-monospace', monospace; }
+    .font-bluescreen { font-family: 'Sunny Brunch', 'BlueScreen', 'ui-monospace', monospace; }
+
+    .type-display {
+      font-family: 'Fragile Bombers', 'Impact', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.6rem);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: 0.04em;
+    }
+    .type-headline {
+      font-family: 'Fragile Bombers', 'Impact', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0.05em;
+    }
+    .type-title {
+      font-family: 'Granix', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0.04em;
+    }
+    .type-body {
+      font-family: 'Granix', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 400;
+      line-height: 1.5;
+      letter-spacing: normal;
+    }
+    .type-label {
+      font-family: 'Sunny Brunch', 'BlueScreen', 'ui-monospace', monospace;
+      font-size: 0.75rem;
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: 0.06em;
+    }
+
+    /* Dynamic Chamber Color Palettes - Blue / Cyan default */
+    :root, :root[data-palette="cyan"] {
+      --accent: #38bdf8;
+      --accent-bright: #7dd3fc;
+      --accent-glow: rgba(56, 189, 248, 0.4);
+      --accent-border: rgba(56, 189, 248, 0.5);
+      --accent-text: #e0f2fe;
+      --accent-bg: rgba(8, 47, 73, 0.7);
+    }
+
+    /* Dynamic Theme Overrides for Instant Live Palette Switching */
+    .text-cyan-400 { color: var(--accent) !important; }
+    .text-cyan-300 { color: var(--accent-text) !important; }
+    .text-cyan-200 { color: var(--accent-bright) !important; }
+    .border-cyan-400, .border-cyan-400\/40, .border-cyan-400\/30, .border-cyan-400\/20 { border-color: var(--accent-border) !important; }
+    .bg-cyan-400 { background-color: var(--accent) !important; }
+    .bg-cyan-950\/80, .bg-cyan-950\/60, .bg-cyan-950\/50, .bg-cyan-950\/40, .bg-cyan-400\/10, .bg-cyan-400\/20 { background-color: var(--accent-bg) !important; }
+
+
+
+    /* Clean Modern Surfaces */
+    .aero-surface {
+      background: #0f172a;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .aero-bar {
+      background: #0b1120;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Clean Modern Button */
+    .chrome-button {
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      transition: all 0.2s ease;
+    }
+    .chrome-button:hover:not(:disabled) {
+      background: #334155;
+      border-color: rgba(255, 255, 255, 0.35);
+      transform: translateY(-1px);
+    }
+    .chrome-button:active:not(:disabled) {
+      transform: translateY(0);
+    }
+    .chrome-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    @keyframes pulse-aura {
+      0%, 100% { box-shadow: 0 0 20px rgba(56, 189, 248, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.4); }
+      50% { box-shadow: 0 0 35px rgba(56, 189, 248, 0.8), 0 0 55px rgba(6, 182, 212, 0.35), inset 0 1px 2px rgba(255, 255, 255, 0.7); }
+    }
+
+    /* Master Shutter Button - Overdrive Plasma Aura */
+    #takePhotoBtn {
+      position: relative;
+      background: radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.35) 0%, rgba(8, 47, 73, 0.95) 100%) !important;
+      border: 1px solid rgba(56, 189, 248, 0.85) !important;
+      color: #e0f2fe !important;
+      animation: pulse-aura 3s infinite ease-in-out;
+      transition: all 0.25s ease;
+    }
+    #takePhotoBtn:hover:not(:disabled) {
+      border-color: #ffffff !important;
+      box-shadow: 0 0 45px rgba(56, 189, 248, 0.9), inset 0 0 25px rgba(56, 189, 248, 0.4) !important;
+      transform: scale(1.03);
+    }
+    #takePhotoBtn:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+
+    /* Clean Action Button */
+    .shimmer-btn {
+      transition: all 0.2s ease;
+    }
+    .shimmer-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px -4px rgba(2, 132, 199, 0.5);
+    }
+    .shimmer-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Custom Themed Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #030712;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 9999px;
+      border: 1px solid var(--accent-glow);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--accent);
+    }
+  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    function setPalette(name) {
+      document.documentElement.setAttribute('data-palette', name);
+      try { localStorage.setItem('openbooth_palette', name); } catch(e){}
+    }
+    try {
+      localStorage.setItem('openbooth_palette', 'cyan');
+      document.documentElement.setAttribute('data-palette', 'cyan');
+    } catch(e) {
+      document.documentElement.setAttribute('data-palette', 'cyan');
+    }
+  </script>
+</head>
+<body class="min-h-screen bg-[#0c0e12] text-slate-100 flex flex-col selection:bg-cyan-400 selection:text-black antialiased relative overflow-x-hidden" style="background-color: #0c0e12; background-image: radial-gradient(circle at 50% 15%, #151821 0%, #0b0d12 100%);">
+
+  <!-- Ambient Floating GIF Layer -->
+  <div id="ambientGifLayer" class="fixed inset-0 z-0 overflow-hidden pointer-events-none select-none"></div>
+
+  <!-- Notification Toast -->
+  <div id="toastNotification" 
+       class="fixed top-5 right-5 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl aero-surface border border-cyan-400/30 text-white font-hud text-xs shadow-2xl transition-all duration-300 opacity-0 pointer-events-none -translate-y-4">
+    <span id="toastIcon" class="text-base text-cyan-400">✦</span>
+    <span id="toastText">Ready for session</span>
+  </div>
+
+  <!-- Primary Application Container -->
+  <div id="mainAppContainer" class="relative z-10 flex flex-col flex-grow max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8 gap-6">
+
+    <!-- Top Navigation Bar -->
+    <header class="aero-bar rounded-2xl px-5 py-3.5 flex flex-col md:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-4">
+        <h1 class="flex items-center line-none m-0 p-0 cursor-pointer" id="headerLogoLink" title="Return Home">
+          <img src="assets/better_header.png" alt="OpenBooth" width="220" height="36" class="h-9 w-auto max-w-[220px] sm:max-w-[260px] object-contain" loading="eager">
+        </h1>
+      </div>
+
+      <!-- Active Room Controls & Status Indicators -->
+      <div class="flex items-center gap-3 w-full md:w-auto justify-end type-label">
+        <div id="statusIndicator" class="hidden flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-900 border border-white/10 text-[11px] font-mono">
+          <span id="statusDot" class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+          <span id="statusText" class="text-slate-300">ONLINE</span>
+        </div>
+        <div id="participantBadge" class="hidden flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-900 border border-white/10 text-[11px] font-mono">
+          <span id="participantDot" class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+          <span id="participantCountText" class="text-slate-300">1 USER READY</span>
+        </div>
+        <div id="roomActiveControls" class="hidden flex items-center gap-2">
+          <div class="bg-slate-900 border border-cyan-500/40 px-3 py-1.5 rounded-xl font-mono text-xs text-cyan-200 flex items-center gap-2">
+            <span class="text-slate-400">ROOM:</span>
+            <span id="displayRoomCode" class="font-bold text-white">#NONE</span>
+          </div>
+          <button id="copyInviteLinkBtn" title="Copy Invite Link" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-cyan-300 px-3 py-1.5 rounded-xl transition-colors text-xs font-semibold flex items-center gap-1.5 cursor-pointer">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+            <span>Copy Link</span>
+          </button>
+          <button id="disconnectBtn" title="Leave room" class="bg-rose-950/80 hover:bg-rose-900 border border-rose-500/50 text-rose-200 px-3 py-1.5 rounded-xl transition-colors text-xs font-semibold cursor-pointer">Leave</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- LANDING VIEW (Shown when NOT in a room) -->
+    <div id="landingView" class="flex flex-col gap-6 w-full flex-grow">
+      
+      <!-- Reconnect Banner (Revealed if active session exists) -->
+      <div id="reconnectBanner" class="hidden aero-surface border border-cyan-500/40 p-4 sm:p-5 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <span class="w-3 h-3 rounded-full bg-cyan-400 animate-pulse"></span>
+          <div>
+            <div class="font-bold text-sm text-white">ACTIVE ROOM FOUND</div>
+            <div class="text-xs text-slate-300 mt-0.5">Your previous session <span id="reconnectCodeText" class="font-bold text-cyan-300">#NONE</span> is still active.</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+          <button id="reconnectAcceptBtn" class="shimmer-btn bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs px-5 py-2.5 rounded-xl transition-all cursor-pointer">RECONNECT</button>
+          <button id="reconnectDismissBtn" class="bg-white/10 hover:bg-white/20 text-slate-300 text-xs px-4 py-2.5 rounded-xl transition-colors cursor-pointer">DISMISS</button>
+        </div>
+      </div>
+
+      <!-- Callsign / Nickname Bar -->
+      <section class="py-3 px-4 flex flex-col items-center justify-center gap-1.5 text-center relative">
+        <label for="pilotNickInput" class="text-slate-400 font-granix text-xs tracking-wider">Your name..</label>
+        <input type="text" id="pilotNickInput" placeholder="Enter your name..." maxlength="20" class="w-full max-w-xs bg-black/40 border border-white/10 rounded-lg text-white placeholder-slate-600 px-3.5 py-2 text-sm font-granix font-medium text-center outline-none focus:border-cyan-400/80 transition-colors">
+      </section>
+
+      <!-- Chamber Access Cards: Host vs Join -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <!-- Left: Create a Room -->
+        <div class="bg-black/60 rounded-2xl p-5 sm:p-6 border border-white/10 flex flex-col justify-between gap-5 hover:border-white/20 transition-all">
+          <div class="flex items-center justify-between">
+            <h2 class="type-headline text-white uppercase text-xl tracking-wider">CREATE A ROOM</h2>
+            <div class="flex items-center gap-1.5 bg-black/40 px-2.5 py-1 rounded-lg border border-white/10">
+              <span id="generatedCodePreview" class="text-xs font-mono text-cyan-300 font-bold">BOOTH-742</span>
+              <button id="rollCodeBtn" type="button" title="Roll new room code" class="text-slate-400 hover:text-cyan-300 transition-colors p-0.5 cursor-pointer">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="flex flex-col gap-2">
+            <label class="flex items-center gap-2 cursor-pointer text-xs font-hud text-slate-400 select-none">
+              <input type="checkbox" id="createLockCheckbox" class="rounded accent-cyan-400 cursor-pointer">
+              <span>Require password</span>
+            </label>
+            <input type="password" id="createPasswordInput" placeholder="Password..." maxlength="32" class="hidden bg-slate-950/90 border border-white/20 focus:border-cyan-400 text-white placeholder-slate-600 px-3 py-1.5 rounded-lg text-xs font-hud outline-none transition-all">
+          </div>
+          <button id="createChamberBtn" class="bg-cyan-500 hover:bg-cyan-400 text-black font-granix font-black text-xs uppercase py-3.5 px-5 rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer w-full">
+            <span>CREATE A ROOM</span>
+          </button>
+        </div>
+
+        <!-- Right: Join a Room -->
+        <div class="bg-black/60 rounded-2xl p-5 sm:p-6 border border-white/10 flex flex-col justify-between gap-5 hover:border-white/20 transition-all">
+          <h2 class="type-headline text-white uppercase text-xl tracking-wider">JOIN A ROOM</h2>
+          <div class="flex flex-col gap-2.5">
+            <input type="text" id="joinCodeInput" placeholder="ROOM CODE" maxlength="16" class="w-full bg-slate-950/90 border border-white/20 text-white placeholder-slate-600 px-3.5 py-2.5 rounded-xl uppercase outline-none focus:border-cyan-400 font-alucrads text-lg text-center tracking-widest transition-all">
+            <input type="password" id="joinPasswordInput" placeholder="Password (optional)" maxlength="32" class="w-full bg-slate-950/90 border border-white/10 focus:border-cyan-400 text-white placeholder-slate-600 px-3 py-1.5 rounded-lg text-xs font-hud outline-none transition-all">
+          </div>
+          <button id="joinChamberBtn" class="border border-white/20 hover:border-cyan-400/50 bg-white/5 hover:bg-white/10 text-white font-granix font-black text-xs uppercase py-3.5 px-5 rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer w-full">
+            <span>JOIN A ROOM</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Trust Bar -->
+      <section class="w-full mt-auto pt-6 pb-2 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400 font-hud">
+        <span class="text-[11px] text-slate-400">100% Client-Side • Zero Cloud Upload</span>
+        <div class="flex items-center gap-3">
+          <button id="openPrivacyModalBtn" class="text-cyan-400 hover:text-cyan-300 text-[11px] transition-colors cursor-pointer">Privacy</button>
+          <span class="text-slate-700">|</span>
+          <button id="openTermsModalBtn" class="text-cyan-400 hover:text-cyan-300 text-[11px] transition-colors cursor-pointer">Terms</button>
+          <span class="text-slate-700">|</span>
+          <button id="clearLocalDataBtn" class="text-slate-400 hover:text-rose-400 text-[11px] transition-colors cursor-pointer" title="Purge local storage callsign and session cookie">Reset Data</button>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- BOOTH VIEW (Shown when actively inside a room) -->
+    <div id="boothView" class="hidden flex flex-col gap-6">
+
+      <!-- Viewports Header -->
+      <span id="modePill" style="display: none !important"></span>
+
+      <!-- Synchronized Countdown Overlay Frame -->
+      <div class="relative">
+        
+        <!-- Big Countdown Overlay (Light, semi-transparent, no blur so users can pose) -->
+        <div id="countdownContainer" 
+             class="hidden absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/25 pointer-events-none rounded-2xl border border-cyan-400/20 p-6 text-center select-none">
+          <span id="countdownShotBadge" class="text-xs uppercase font-mono tracking-widest text-cyan-300/90 mb-1 bg-black/50 px-3.5 py-1 rounded-full border border-cyan-400/30">PHOTO 1 OF 4</span>
+          <span id="countdownNumber" class="text-8xl sm:text-9xl font-alucrads font-black text-cyan-100 drop-shadow-[0_0_35px_rgba(56,189,248,0.7)] leading-none">3</span>
+          <span id="countdownMessage" class="text-xs sm:text-sm uppercase font-mono tracking-wider text-cyan-200 mt-3 drop-shadow bg-black/50 px-4 py-1.5 rounded-xl border border-white/10">STRIKE A POSE</span>
+          
+          <!-- Shot Progress Dots -->
+          <div id="countdownDots" class="flex items-center gap-3 mt-5">
+            <div class="w-3 h-3 rounded-full bg-cyan-400 scale-125 shadow-[0_0_10px_#38bdf8]"></div>
+            <div class="w-3 h-3 rounded-full bg-white/30"></div>
+            <div class="w-3 h-3 rounded-full bg-white/30"></div>
+            <div class="w-3 h-3 rounded-full bg-white/30"></div>
+          </div>
+        </div>
+
+        <!-- Shutter Flash Overlay -->
+        <div id="flashOverlay" 
+             class="absolute inset-0 z-40 bg-white opacity-0 pointer-events-none transition-opacity duration-150 rounded-3xl mix-blend-screen"></div>
+
+        <!-- Dual Video Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          
+          <!-- Viewport 01: You (Local Feed) -->
+          <div class="relative bg-black rounded-2xl overflow-hidden border border-cyan-500/30 aspect-[4/3] flex items-center justify-center shadow-[inset_0_0_25px_rgba(0,0,0,0.95)]">
+            <video id="localVideo" autoplay playsinline muted class="w-full h-full object-contain scale-x-[-1]" style="background: #000; box-shadow: inset 0 0 30px rgba(6, 182, 212, 0.4);"></video>
+
+            <!-- Viewport Badge (Click to edit nickname) -->
+            <div id="localNickBadge" title="Click to change your name" class="absolute top-4 left-4 z-20 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-md border-l-2 border-cyan-400 border-y border-r border-white/10 flex items-center gap-2 shadow-[0_4px_12px_rgba(0,0,0,0.6)] cursor-pointer hover:border-cyan-300 transition-all select-none group">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              <span id="localNickDisplay" class="type-label text-xs font-bold text-white tracking-wide group-hover:text-cyan-300">YOU</span>
+              <span class="text-[10px] font-hud text-slate-400 tracking-wider">(LOCAL)</span>
+              <svg class="w-3 h-3 text-slate-400 group-hover:text-cyan-300 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+            </div>
+
+            <!-- Manual Camera Toggle Button -->
+            <button id="toggleCameraBtn" type="button" title="Turn camera on or off" class="absolute top-4 right-4 z-20 bg-black/80 hover:bg-black/95 backdrop-blur-md px-3 py-1.5 rounded-md border border-white/20 hover:border-cyan-400 flex items-center gap-1.5 text-[11px] font-hud text-cyan-200 transition-all cursor-pointer shadow-[0_4px_12px_rgba(0,0,0,0.6)]">
+              <span id="toggleCameraIcon" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span id="toggleCameraText">CAMERA ON</span>
+            </button>
+
+            <!-- Offline / Permission Placeholder -->
+            <div id="localVideoPlaceholder" class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 bg-black/80 backdrop-blur-sm z-10 font-hud text-center p-6">
+              <svg class="w-10 h-10 mb-3 text-cyan-400 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+              </svg>
+              <span class="type-title uppercase text-slate-200">CAMERA IS OFF</span>
+              <span class="type-body text-slate-400 mt-1 mb-4">Camera is disabled or offline</span>
+              <button id="enableCameraBtn"
+                      class="bg-white/10 hover:bg-white/20 border border-cyan-400/40 text-cyan-300 font-granix text-xs uppercase px-4 py-2 rounded-lg transition-colors cursor-pointer">
+                ENABLE CAMERA
+              </button>
+            </div>
+          </div>
+
+          <!-- Viewport 02: Partner (Remote Feed) -->
+          <div class="relative bg-black rounded-2xl overflow-hidden border border-cyan-500/30 aspect-[4/3] flex items-center justify-center shadow-[inset_0_0_25px_rgba(0,0,0,0.95)]">
+            <video id="remoteVideo" autoplay playsinline muted class="w-full h-full object-cover"></video>
+
+            <!-- Viewport Badge -->
+            <div class="absolute top-4 left-4 z-20 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-md border-l-2 border-cyan-400 border-y border-r border-white/10 flex items-center gap-2 shadow-[0_4px_12px_rgba(0,0,0,0.6)]">
+              <span id="remoteStatusDot" class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+              <span id="remoteNickDisplay" class="type-label text-xs font-bold text-white tracking-wide">WAITING FOR FRIEND</span>
+            </div>
+
+            <!-- Waiting for Partner Placeholder (Clean dark ambient grid, no broken GIF) -->
+            <div id="remoteVideoPlaceholder" class="absolute inset-0 flex flex-col items-center justify-center text-slate-300 z-10 font-hud text-center p-6 overflow-hidden"
+                 style="background: radial-gradient(circle at 50% 40%, rgba(15, 23, 42, 0.95) 0%, rgba(3, 7, 18, 0.98) 100%), linear-gradient(rgba(56, 189, 248, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(56, 189, 248, 0.05) 1px, transparent 1px); background-size: 100% 100%, 24px 24px, 24px 24px; box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.9);">
+              <div class="w-12 h-12 rounded-full border border-cyan-400/40 flex items-center justify-center mb-3 text-cyan-300 bg-black/60 backdrop-blur-md shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+                <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <span id="remotePlaceholderText" class="text-sm font-bold text-cyan-200">WAITING FOR YOUR FRIEND</span>
+              <span id="remotePlaceholderSubText" class="text-xs text-slate-300 mt-1 mb-4">Send the room link to your friend to start snapping photos together</span>
+              <button id="invitePartnerCardBtn"
+                      class="bg-black/70 hover:bg-black/90 border border-cyan-400/40 hover:border-cyan-400 text-cyan-200 text-xs font-semibold px-4 py-2 rounded-xl transition-all cursor-pointer">
+                COPY ROOM LINK
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- 4-Shot Mini Tray & Master Shutter Bar -->
+      <div class="aero-bar rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-5 border border-white/10 relative overflow-hidden">
+        
+        <!-- Thumbnail Slots -->
+        <div class="flex items-center gap-4">
+          <span id="shotTrayCount" class="text-xs font-semibold text-slate-400 uppercase hidden sm:inline-block">
+            4 PHOTOS:
+          </span>
+
+          <div class="flex items-center gap-3">
+            <!-- Slot 0 -->
+            <div id="thumbSlot-0" class="w-14 h-14 rounded-xl bg-white/5 overflow-hidden flex items-center justify-center relative border border-white/10">
+              <span id="thumbPlaceholder-0" class="text-xs text-slate-500 font-bold">1</span>
+              <img id="thumbImg-0" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Shot 1" class="hidden w-full h-full object-cover">
+            </div>
+
+            <!-- Slot 1 -->
+            <div id="thumbSlot-1" class="w-14 h-14 rounded-xl bg-white/5 overflow-hidden flex items-center justify-center relative border border-white/10">
+              <span id="thumbPlaceholder-1" class="text-xs text-slate-500 font-bold">2</span>
+              <img id="thumbImg-1" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Shot 2" class="hidden w-full h-full object-cover">
+            </div>
+
+            <!-- Slot 2 -->
+            <div id="thumbSlot-2" class="w-14 h-14 rounded-xl bg-white/5 overflow-hidden flex items-center justify-center relative border border-white/10">
+              <span id="thumbPlaceholder-2" class="text-xs text-slate-500 font-bold">3</span>
+              <img id="thumbImg-2" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Shot 3" class="hidden w-full h-full object-cover">
+            </div>
+
+            <!-- Slot 3 -->
+            <div id="thumbSlot-3" class="w-14 h-14 rounded-xl bg-white/5 overflow-hidden flex items-center justify-center relative border border-white/10">
+              <span id="thumbPlaceholder-3" class="text-xs text-slate-500 font-bold">4</span>
+              <img id="thumbImg-3" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Shot 4" class="hidden w-full h-full object-cover">
+            </div>
+          </div>
+        </div>
+
+        <!-- Master Shutter Button Trigger -->
+        <div class="flex items-center gap-4 w-full sm:w-auto justify-end">
+
+          <button id="takePhotoBtn"
+                  type="button"
+                  class="w-full sm:w-auto font-granix font-black text-xs uppercase px-9 py-4 rounded-2xl flex items-center justify-center gap-3 cursor-pointer text-cyan-100 tracking-widest select-none">
+            <svg class="w-5 h-5 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span id="takePhotoBtnText">TAKE PHOTOS (4 SHOTS)</span>
+            <span id="takePhotoBtnSub" class="hidden"></span>
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Hidden Photostrip Canvas (Rendered client-side) -->
+    <canvas id="photostripCanvas" class="hidden"></canvas>
+
+    <!-- Photostrip Keepsake Result Drawer -->
+    <section id="resultSection" 
+             class="hidden aero-surface rounded-3xl p-8 shadow-[0_25px_60px_rgba(0,0,0,0.95)] border border-cyan-400/40 flex flex-col gap-6">
+      
+      <!-- Result Header -->
+      <div class="flex justify-between items-center border-b border-white/10 pb-5">
+        <div>
+          <h2 class="text-white text-xl font-bold leading-none">
+            Your Photo Strip is Ready!
+          </h2>
+          <p id="resultSubtitle" class="text-cyan-300 text-xs mt-2 font-medium">
+            4 synchronized photos captured
+          </p>
+        </div>
+        <button id="closePreviewBtn" title="Close Preview"
+                class="text-slate-400 hover:text-white text-2xl leading-none px-3 py-1.5 transition-colors cursor-pointer">
+          &times;
+        </button>
+      </div>
+
+      <!-- Preview & Controls Grid -->
+      <div class="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-8">
+        
+        <!-- Rendered Physical Photostrip Preview Image Directly -->
+        <img id="photostripPreview" 
+             src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" 
+             alt="Photo Strip Preview" 
+             class="w-full max-w-[280px] sm:max-w-[320px] h-auto rounded-2xl border-2 border-cyan-400/40 shadow-2xl">
+
+        <!-- Strip Customization & Download Column -->
+        <div class="flex-grow flex flex-col gap-6 type-body w-full max-w-md">
+          
+          <!-- Theme Palette Selector -->
+          <div class="space-y-3">
+            <div class="text-white text-xs font-bold uppercase tracking-wider">
+              COLOR THEME
+            </div>
+            <div id="themeSelectorContainer" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs font-semibold">
+              <button data-theme="cyber" 
+                      class="theme-btn px-3 py-2.5 rounded-xl bg-slate-800 border border-cyan-400 text-cyan-300 transition-all text-center cursor-pointer">
+                Dark
+              </button>
+              <button data-theme="classic" 
+                      class="theme-btn px-3 py-2.5 rounded-xl bg-transparent text-white border border-white/20 hover:border-cyan-400 transition-all text-center cursor-pointer">
+                Classic B&W
+              </button>
+              <button data-theme="sepia" 
+                      class="theme-btn px-3 py-2.5 rounded-xl bg-transparent text-white border border-white/20 hover:border-cyan-400 transition-all text-center cursor-pointer">
+                Sepia
+              </button>
+              <button data-theme="neon" 
+                      class="theme-btn px-3 py-2.5 rounded-xl bg-transparent text-white border border-white/20 hover:border-cyan-400 transition-all text-center cursor-pointer">
+                Pastel
+              </button>
+            </div>
+          </div>
+
+          <!-- Duo Layout Switcher (Split vs Dual) -->
+          <div id="duoLayoutControl" class="hidden space-y-3">
+            <div class="text-white text-xs font-bold uppercase tracking-wider">
+              PHOTO LAYOUT
+            </div>
+            <div class="grid grid-cols-2 gap-2.5 text-xs font-semibold">
+              <button id="layoutSplitBtn" 
+                      class="px-3 py-2.5 rounded-xl bg-slate-800 border border-cyan-400 text-cyan-300 transition-all text-center cursor-pointer">
+                Split Screen
+              </button>
+              <button id="layoutDualBtn" 
+                      class="px-3 py-2.5 rounded-xl bg-transparent text-white border border-white/20 hover:border-cyan-400 transition-all text-center cursor-pointer">
+                Side by Side
+              </button>
+            </div>
+          </div>
+
+          <!-- Action Triggers -->
+          <div class="flex flex-col gap-3 pt-2">
+            <button id="downloadStripBtn" 
+                    class="chrome-button font-bold text-xs uppercase py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 cursor-pointer">
+              <svg class="w-4 h-4 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              <span>DOWNLOAD PHOTO STRIP (PNG)</span>
+            </button>
+
+            <button id="retakePhotosBtn" 
+                    class="bg-white/10 hover:bg-white/20 border border-white/20 text-slate-200 text-xs font-semibold py-3 px-6 rounded-xl transition-colors text-center cursor-pointer">
+              RETAKE PHOTOS
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  <!-- Interactive Room Modals -->
+
+  <!-- Modal: Room Not Found -->
+  <div id="chamberNotFoundModal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="aero-surface rounded-2xl p-7 max-w-md w-full border border-rose-500/40 shadow-2xl flex flex-col gap-5 text-center">
+      <div class="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/40 flex items-center justify-center mx-auto text-rose-400">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+      </div>
+      <div>
+        <h3 class="text-white font-bold text-xl">ROOM NOT FOUND</h3>
+        <p class="text-slate-300 text-xs mt-2">
+          Room <span id="notFoundCodeSpan" class="text-cyan-400 font-bold font-mono">#NONE</span> could not be found or has expired.
+        </p>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-3 pt-2">
+        <button id="modalReturnLobbyBtn" class="flex-1 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold py-3 px-4 rounded-xl transition-colors cursor-pointer">
+          RETURN HOME
+        </button>
+        <button id="modalCreateRoomInsteadBtn" class="flex-1 bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs py-3 px-4 rounded-xl transition-all shadow-lg cursor-pointer">
+          CREATE A ROOM
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Room Capacity Full -->
+  <div id="chamberFullModal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="aero-surface rounded-2xl p-7 max-w-md w-full border border-amber-500/40 shadow-2xl flex flex-col gap-5 text-center">
+      <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/40 flex items-center justify-center mx-auto text-amber-400">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+      </div>
+      <div>
+        <h3 class="text-white font-bold text-xl">ROOM IS FULL</h3>
+        <p class="text-slate-300 text-xs mt-2">
+          Room <span id="fullCodeSpan" class="text-cyan-400 font-bold font-mono">#NONE</span> already has 2 people connected. For privacy, each room is limited to 2 participants.
+        </p>
+      </div>
+      <div class="pt-2">
+        <button id="modalFullLobbyBtn" class="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs uppercase py-3 px-4 rounded-xl transition-all cursor-pointer">
+          RETURN HOME
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Password Required -->
+  <div id="chamberPasswordModal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="aero-surface rounded-2xl p-7 max-w-md w-full border border-cyan-400/50 shadow-2xl flex flex-col gap-5 text-center">
+      <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/40 flex items-center justify-center mx-auto text-cyan-400">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+      </div>
+      <div>
+        <h3 class="text-white font-bold text-xl">ROOM IS LOCKED</h3>
+        <p class="text-slate-300 text-xs mt-2">
+          Room <span id="pwdCodeSpan" class="text-cyan-400 font-bold font-mono">#NONE</span> requires a password to enter.
+        </p>
+      </div>
+      <div class="flex flex-col gap-2 text-left">
+        <input type="password" id="modalPasswordInput" placeholder="Enter room password..." class="w-full bg-slate-950 border border-cyan-500/40 focus:border-cyan-300 text-white placeholder-slate-500 px-4 py-2.5 rounded-xl text-sm outline-none">
+        <div id="modalPasswordError" class="hidden text-rose-400 text-xs">Invalid room password. Please try again.</div>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-3 pt-2">
+        <button id="modalPasswordCancelBtn" class="flex-1 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold py-3 px-4 rounded-xl transition-colors cursor-pointer">
+          CANCEL
+        </button>
+        <button id="modalPasswordSubmitBtn" class="flex-1 bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs uppercase py-3 px-4 rounded-xl transition-all shadow-lg cursor-pointer">
+          UNLOCK & JOIN
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Name Prompt (for direct link visits without stored nick) -->
+  <div id="chamberNickModal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="aero-surface rounded-2xl p-7 max-w-md w-full border border-cyan-400/50 shadow-2xl flex flex-col gap-5 text-center">
+      <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/40 flex items-center justify-center mx-auto text-cyan-400">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+      </div>
+      <div>
+        <h3 class="text-white font-bold text-xl">ENTER YOUR NAME</h3>
+        <p class="text-slate-300 text-xs mt-2">
+          Enter your name to join Room <span id="nickCodeSpan" class="text-cyan-400 font-bold font-mono">#NONE</span> with your friend:
+        </p>
+      </div>
+      <div class="flex flex-col gap-2 text-left">
+        <input type="text" id="modalNickInput" placeholder="e.g. Alex" maxlength="20" class="w-full bg-slate-950 border border-cyan-500/40 focus:border-cyan-300 text-white placeholder-slate-500 px-4 py-2.5 rounded-xl text-center text-sm outline-none">
+      </div>
+      <div class="flex flex-col sm:flex-row gap-3 pt-2">
+        <button id="modalNickCancelBtn" class="flex-1 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold py-3 px-4 rounded-xl transition-colors cursor-pointer">
+          RETURN HOME
+        </button>
+        <button id="modalNickSubmitBtn" class="flex-1 bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs uppercase py-3 px-4 rounded-xl transition-all shadow-lg cursor-pointer">
+          JOIN ROOM →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Storage Transparency Notice Drawer / Banner -->
+  <aside id="privacyStorageNotice" class="hidden fixed bottom-16 sm:bottom-6 left-4 right-4 sm:right-auto sm:max-w-md z-40 bg-slate-950 border border-cyan-500/40 rounded-2xl p-4 shadow-2xl backdrop-blur-xl text-xs transition-all">
+    <div class="flex items-start justify-between gap-3">
+      <div class="flex items-center gap-2 text-cyan-300 font-bold text-xs uppercase tracking-wider">
+        <svg class="w-4 h-4 text-cyan-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+        </svg>
+        <span>PRIVACY NOTICE</span>
+      </div>
+      <button id="dismissStorageNoticeBtn" class="text-slate-400 hover:text-white p-1 rounded hover:bg-white/10 transition-colors cursor-pointer" title="Dismiss notice">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <p class="text-slate-300 text-[11px] mt-2 leading-relaxed">
+      OpenBooth is 100% private. Photos stay on your device and are never uploaded or stored on any server. We only use browser storage to remember your name and room reconnection.
+    </p>
+    <div class="flex items-center justify-between gap-2 mt-3 pt-2.5 border-t border-white/10 text-[11px]">
+      <span class="text-slate-500 text-[10px]">Zero server tracking</span>
+      <button id="ackStorageNoticeBtn" class="bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-[11px] uppercase py-1 px-3.5 rounded-lg transition-all shadow-md cursor-pointer">
+        GOT IT
+      </button>
+    </div>
+  </aside>
+
+  <!-- Modal: Legal Compliance Center -->
+  <div id="legalModal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="aero-surface rounded-2xl max-w-2xl w-full border border-cyan-400/50 shadow-2xl flex flex-col max-h-[88vh] overflow-hidden bg-slate-950">
+      <!-- Modal Header -->
+      <div class="p-5 border-b border-white/10 flex items-center justify-between bg-black/40">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/40 flex items-center justify-center text-cyan-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          </div>
+          <div>
+            <h3 id="legalModalTitle" class="text-white text-lg sm:text-xl font-bold tracking-tight">PRIVACY POLICY &amp; TERMS</h3>
+            <p class="text-slate-400 text-xs">Zero-Knowledge Architecture &amp; User Privacy</p>
+          </div>
+        </div>
+        <button id="closeLegalModalBtn" class="text-slate-400 hover:text-white p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors cursor-pointer" title="Close modal">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Tab Buttons -->
+      <div class="flex border-b border-white/10 bg-black/60 px-5 pt-3 gap-2">
+        <button id="tabPrivacyBtn" class="px-4 py-2 font-bold text-xs uppercase tracking-wider rounded-t-lg transition-colors border-b-2 border-cyan-400 text-cyan-300 bg-white/5 cursor-pointer">
+          1. PRIVACY POLICY
+        </button>
+        <button id="tabTermsBtn" class="px-4 py-2 font-bold text-xs uppercase tracking-wider rounded-t-lg transition-colors border-b-2 border-transparent text-slate-400 hover:text-slate-200 cursor-pointer">
+          2. TERMS OF SERVICE
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div id="legalModalBody" class="p-6 overflow-y-auto max-h-[55vh] space-y-4 text-xs leading-relaxed text-slate-300">
+        <!-- Content inserted dynamically -->
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 border-t border-white/10 bg-black/60 flex items-center justify-between">
+        <span class="text-[11px] text-slate-400">OpenBooth · Private 2-Player WebRTC Photobooth</span>
+        <button id="legalModalDoneBtn" class="bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs uppercase py-2 px-6 rounded-xl transition-all shadow-lg cursor-pointer">
+          I UNDERSTAND
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Collapsible Connection Info Dock (Footer) -->
+  <footer class="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-2">
+    <!-- Telemetry Panel Body (Starts hidden) -->
+    <div id="debuggerBody" class="hidden w-80 sm:w-96 bg-slate-950/95 border border-cyan-500/40 rounded-xl p-3 shadow-2xl backdrop-blur-xl text-xs font-mono flex flex-col gap-2 max-h-[380px]">
+      <div class="flex items-center justify-between pb-2 border-b border-cyan-500/20">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+          <span class="font-bold text-cyan-300 uppercase tracking-wider text-[11px]">Connection Info</span>
+        </div>
+        <button id="clearLogsBtn" class="text-[10px] text-slate-400 hover:text-white px-2 py-0.5 rounded bg-white/5 hover:bg-white/10 transition-colors">CLEAR</button>
+      </div>
+
+      <!-- Real-time Status Badges -->
+      <div class="grid grid-cols-2 gap-2 text-[10px] py-1 border-b border-slate-800">
+        <div class="bg-black/40 p-1.5 rounded border border-white/5">
+          <span class="text-slate-500 block">WS STATUS:</span>
+          <span id="debugWsStatus" class="font-bold text-slate-300">DISCONNECTED</span>
+        </div>
+        <div class="bg-black/40 p-1.5 rounded border border-white/5">
+          <span class="text-slate-500 block">RTC STATUS:</span>
+          <span id="debugRtcStatus" class="font-bold text-slate-300">NEW</span>
+        </div>
+        <div class="bg-black/40 p-1.5 rounded border border-white/5">
+          <span class="text-slate-500 block">ICE STATE:</span>
+          <span id="debugIceStatus" class="font-bold text-slate-300">DISCONNECTED</span>
+        </div>
+        <div class="bg-black/40 p-1.5 rounded border border-white/5">
+          <span class="text-slate-500 block">ACTIVE ROOM:</span>
+          <span id="debugActiveRoom" class="font-bold text-cyan-400">NONE</span>
+        </div>
+      </div>
+
+      <!-- Live Logs Output -->
+      <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Connection Logs:</div>
+      <div id="debugLogsContainer" class="flex-grow overflow-y-auto max-h-44 bg-black/60 rounded p-2 border border-white/5 space-y-1 font-mono text-[10px] text-slate-300"></div>
+    </div>
+
+    <!-- Toggle Button -->
+    <button id="toggleDebuggerBtn" class="bg-slate-950/80 hover:bg-slate-900 text-slate-300 hover:text-cyan-300 border border-slate-700 font-mono text-[10px] tracking-wider uppercase px-3 py-1 rounded-md backdrop-blur-md shadow-lg transition-all active:scale-95 cursor-pointer flex items-center gap-1.5">
+      <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+      <span>CONNECTION INFO</span>
+    </button>
+  </footer>
+
+  <script src="ambient-gifs.js" defer></script>
+  <script src="app.js" defer></script>
+</body>
+</html>

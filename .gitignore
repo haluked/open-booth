@@ -1,0 +1,66 @@
+# Python & Bytecode
+__pycache__/
+backend/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+backend/venv/
+venv/
+ENV/
+env/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Executables & Binaries
+*.exe
+*.dll
+cloudflared.exe
+
+# Temporary & Redundant Archives
+*.zip
+*.tar.gz
+*.rar
+
+# Redundant duplicate directories & scrap files in root
+/samples/
+/0cb88d4f73c6756bb5a0d194958bd5f5.jpg
+/button.jpg
+/button1.jpg
+/sample.jpg
+/square.jpg
+/sunny-brunch.regular.ttf
+
+# Loose root duplicates (assets already organized under frontend/assets/)
+/banner.png
+/better header.png
+/button2.jpg
+/caputre_button.gif
+/header.png
+/square.png
+/class=aero-bar rounded-2x1.jpg
+/Chrome Open-Booth Metal Logo.png
+/Chrome Open-Booth Metal Logo_magick.png
+
+# Loose duplicates in frontend/ root
+/frontend/banner.png
+/frontend/button2.jpg
+/frontend/caputre_button.gif
+/frontend/class=aero-bar rounded-2x1.jpg
+
+# Local Editor & Tooling State
+.impeccable/
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs & Local Environments
+*.log
+.env
+.env.*
+!.env.example
